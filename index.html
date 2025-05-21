@@ -1,0 +1,65 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Biblioteca Digital</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <h1>📚 Biblioteca Digital</h1>
+  <div id="livros-container">
+    <p>Carregando livros...</p>
+  </div>
+
+  <script src="js/livroRequests.js"></script>
+  <script>
+    const api = new LivroRequests();
+
+    api.listarLivros().then(livros => {
+      const container = document.getElementById('livros-container');
+      container.innerHTML = '';
+
+      if (!livros || livros.length === 0) {
+        container.innerHTML = '<p>Nenhum livro encontrado.</p>';
+        return;
+      }
+
+      const table = document.createElement('table');
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Autor</th>
+            <th>Editora</th>
+            <th>Ano</th>
+            <th>ISBN</th>
+            <th>Total</th>
+            <th>Disponível</th>
+            <th>Valor</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${livros.map(livro => `
+            <tr>
+              <td>${livro.titulo}</td>
+              <td>${livro.autor}</td>
+              <td>${livro.editora}</td>
+              <td>${livro.anoPublicacao}</td>
+              <td>${livro.isbn}</td>
+              <td>${livro.quantTotal}</td>
+              <td>${livro.quantDisponivel}</td>
+              <td>R$ ${parseFloat(livro.valorAquisicao).toFixed(2)}</td>
+              <td>${livro.statusLivroEmprestado}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      `;
+      container.appendChild(table);
+    }).catch(err => {
+      document.getElementById('livros-container').innerHTML = `<p>Erro ao carregar livros: ${err.message}</p>`;
+    });
+  </script>
+</body>
+</html>
